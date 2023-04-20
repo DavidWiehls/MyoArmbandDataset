@@ -51,9 +51,6 @@ def read_data(candidate,classe_number):
 
 candidate = 0
 classe_number = 0
-#for classe_number in range(24):
-#    data = read_data(candidate=candidate,classe_number=classe_number)
-#    plot_raw_data(data)
-
-a,b = lptd.read_data('../../PreTrainingDataset')
-print(a[0][0].shape)
+for classe_number in range(24):
+    data = read_data(candidate=candidate,classe_number=classe_number)
+    plot_raw_data(data)
