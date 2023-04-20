@@ -11,6 +11,8 @@ from torch.autograd import Variable
 import target_network_raw_emg_enhanced
 import load_pre_training_dataset
 import load_evaluation_dataset
+import os
+import pickle
 
 def scramble(examples, labels, second_labels=[]):
     random_vec = np.arange(len(labels))
@@ -75,7 +77,7 @@ def calculate_pre_training(examples, labels):
         print("Shape training : ", np.shape(examples_personne_scrambled))
         print("Shape valid : ", np.shape(examples_personne_scrambled_valid))
 
-    cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cuda()
+    cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cpu()
 
     criterion = nn.CrossEntropyLoss(size_average=False)
     optimizer = optim.Adam(cnn.parameters(), lr=0.002335721469090121)
@@ -138,7 +140,7 @@ def pre_train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epoch
                     # get the inputs
                     inputs, labels = data
 
-                    inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+                    inputs, labels = Variable(inputs.cpu()), Variable(labels.cpu())
 
                     # zero the parameter gradients
                     optimizer.zero_grad()
@@ -231,7 +233,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             Y_test_1.extend(labels_test_1[j][k])
             
         if training_cycle == 0:
-            cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cuda()
+            cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cpu()
             cnn.eval()
             X_test_0, Y_test_0 = scramble(X_test_0, Y_test_0)
 
@@ -249,8 +251,8 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_0 in enumerate(test_0_loader, 0):
                 # get the inputs
                 inputs_test_0, ground_truth_test_0 = data_test_0
-                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cuda()), Variable(
-                    ground_truth_test_0.cuda())
+                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cpu()), Variable(
+                    ground_truth_test_0.cpu())
     
                 outputs_test_0 = cnn(inputs_test_0)
                 _, predicted = torch.max(outputs_test_0.data, 1)
@@ -265,8 +267,8 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_1 in enumerate(test_1_loader, 0):
                 # get the inputs
                 inputs_test_1, ground_truth_test_1 = data_test_1
-                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cuda()), Variable(
-                    ground_truth_test_1.cuda())
+                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cpu()), Variable(
+                    ground_truth_test_1.cpu())
     
                 outputs_test_1 = cnn(inputs_test_1)
                 _, predicted = torch.max(outputs_test_1.data, 1)
@@ -297,7 +299,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             pre_trained_weights = torch.load('convnet_weights/best_pre_train_weights_target_raw.pt')
             cnn = target_network_raw_emg_enhanced.TargetNetwork(number_of_class=7,
                                                                 weights_pre_trained_convnet=pre_trained_weights,
-                                                                dropout=.5).cuda()
+                                                                dropout=.5).cpu()
             
             criterion = nn.CrossEntropyLoss(size_average=False)
             optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
@@ -327,7 +329,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_0 in enumerate(test_0_loader, 0):
                 # get the inputs
                 inputs_test_0, ground_truth_test_0 = data_test_0
-                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cuda()), Variable(ground_truth_test_0.cuda())
+                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cpu()), Variable(ground_truth_test_0.cpu())
                 
                 outputs_test_0 = cnn(inputs_test_0)
                 _, predicted = torch.max(outputs_test_0.data, 1)
@@ -342,7 +344,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_1 in enumerate(test_1_loader, 0):
                 # get the inputs
                 inputs_test_1, ground_truth_test_1 = data_test_1
-                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cuda()), Variable(ground_truth_test_1.cuda())
+                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cpu()), Variable(ground_truth_test_1.cpu())
                 
                 outputs_test_1 = cnn(inputs_test_1)
                 _, predicted = torch.max(outputs_test_1.data, 1)
@@ -385,7 +387,7 @@ def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=50
             for i, data in enumerate(dataloaders[phase], 0):
                 # get the inputs
                 inputs, labels = data
-                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+                inputs, labels = Variable(inputs.cpu()), Variable(labels.cpu())
                 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -446,17 +448,25 @@ if __name__ == '__main__':
     # Change the path of the Evaluation and PreTraining Dataset to where you have it downloaded
     
     # Comment between here
-    '''
-    examples, labels = load_pre_training_dataset.read_data('../../PreTrainingDataset')
-    datasets = [examples, labels]
+    
+    # examples, labels = load_pre_training_dataset.read_data('../../PreTrainingDataset')
+    # datasets = [examples, labels]
+    
+    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    # dataset_list = [arr for arr in datasets]
+    # if not os.path.exists("formatted_datasets"):
+    #     os.makedirs("formatted_datasets", exist_ok=True)
+    # # Save the list using pickle
+    # with open("formatted_datasets/saved_pre_training_dataset_spectrogram.pkl", "wb") as file:
+    #     pickle.dump(dataset_list, file)
 
-    np.save("formatted_datasets/saved_pre_training_dataset_spectrogram.npy", datasets)
-    '''
     # And here if the pre-training dataset was already processed and saved
     
     # Comment between here
     
-    datasets_pre_training = np.load("formatted_datasets/saved_pre_training_dataset_spectrogram.npy", encoding="bytes")
+    with open("formatted_datasets/saved_pre_training_dataset_spectrogram.pkl", "rb") as file:
+        datasets_pre_training = pickle.load(file)
+        
     examples_pre_training, labels_pre_training = datasets_pre_training
     calculate_pre_training(examples_pre_training, labels_pre_training)
     

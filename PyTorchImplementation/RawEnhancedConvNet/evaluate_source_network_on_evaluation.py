@@ -85,7 +85,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
         trainloader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True, drop_last=True)
         validationloader = torch.utils.data.DataLoader(validation, batch_size=128, shuffle=True, drop_last=True)
         
-        cnn = source_network_raw_emg_enhanced.Net(number_of_class=7).cuda()
+        cnn = source_network_raw_emg_enhanced.Net(number_of_class=7).cpu()
         
         criterion = nn.CrossEntropyLoss(size_average=False)
         optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
@@ -115,7 +115,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
         for k, data_test_0 in enumerate(test_0_loader, 0):
             # get the inputs
             inputs_test_0, ground_truth_test_0 = data_test_0
-            inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cuda()), Variable(ground_truth_test_0.cuda())
+            inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cpu()), Variable(ground_truth_test_0.cpu())
             
             outputs_test_0 = cnn(inputs_test_0)
             _, predicted = torch.max(outputs_test_0.data, 1)
@@ -130,7 +130,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
         for k, data_test_1 in enumerate(test_1_loader, 0):
             # get the inputs
             inputs_test_1, ground_truth_test_1 = data_test_1
-            inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cuda()), Variable(ground_truth_test_1.cuda())
+            inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cpu()), Variable(ground_truth_test_1.cpu())
     
             outputs_test_1 = cnn(inputs_test_1)
             _, predicted = torch.max(outputs_test_1.data, 1)
@@ -173,7 +173,7 @@ def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=50
             for i, data in enumerate(dataloaders[phase], 0):
                 # get the inputs
                 inputs, labels = data
-                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
+                inputs, labels = Variable(inputs.cpu()), Variable(labels.cpu())
                 
                 # zero the parameter gradients
                 optimizer.zero_grad()
