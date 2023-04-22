@@ -1,3 +1,6 @@
 *.png
 *.pyc
 *.pkl
+*.txt
+*.npy
+*.pt
