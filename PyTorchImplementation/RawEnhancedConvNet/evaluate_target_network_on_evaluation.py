@@ -81,7 +81,7 @@ def calculate_pre_training(examples, labels):
 
     criterion = nn.CrossEntropyLoss(size_average=False)
     optimizer = optim.Adam(cnn.parameters(), lr=0.002335721469090121)
-    precision = 1e-8
+    precision = 1e-2
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode='min', factor=.2, patience=15,
                                                      verbose=True, eps=precision)
 
@@ -89,7 +89,7 @@ def calculate_pre_training(examples, labels):
                     dataloaders={"train": list_train_dataloader, "val": list_validation_dataloader},
                     precision=precision)
 
-def pre_train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=500, precision=1e-8):
+def pre_train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=500, precision=1e-2):
     since = time.time()
 
     # Create a list of dictionaries that will hold the weights of the batch normalisation layers for each dataset
@@ -358,7 +358,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
     return accuracy_test0, accuracy_test1
 
 
-def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=500, precision=1e-8):
+def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=500, precision=1e-6):
     since = time.time()
     
     best_loss = float('inf')
@@ -445,9 +445,9 @@ def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=50
     return cnn
 
 if __name__ == '__main__':
-    # Change the path of the Evaluation and PreTraining Dataset to where you have it downloaded
-    
-    # Comment between here
+
+    #-----------------SAVE PRE-TRAINING DATA SET-------------------------------------------------------
+    ### If the pre-training dataset was already processed and saved comment between here
     
     # examples, labels = load_pre_training_dataset.read_data('../../PreTrainingDataset')
     # datasets = [examples, labels]
@@ -457,55 +457,81 @@ if __name__ == '__main__':
     # if not os.path.exists("formatted_datasets"):
     #     os.makedirs("formatted_datasets", exist_ok=True)
     # # Save the list using pickle
-    # with open("formatted_datasets/saved_pre_training_dataset_spectrogram.pkl", "wb") as file:
+    # with open("formatted_datasets/saved_pre_training_dataset.pkl", "wb") as file:
     #     pickle.dump(dataset_list, file)
 
     # And here if the pre-training dataset was already processed and saved
     
-    # Comment between here
+    ### and here
     
-    with open("formatted_datasets/saved_pre_training_dataset_spectrogram.pkl", "rb") as file:
+    #-----------------LOAD PRE-TRAINING DATA SET-------------------------------------------------------
+    ### If the pre-training dataset was already processed and saved uncomment between here
+    with open("formatted_datasets/saved_pre_training_dataset.pkl", "rb") as file:
         datasets_pre_training = pickle.load(file)
         
     examples_pre_training, labels_pre_training = datasets_pre_training
-    calculate_pre_training(examples_pre_training, labels_pre_training)
+    #calculate_pre_training(examples_pre_training, labels_pre_training)
     
-    # Comment between here
+    ### and here
     
+    # #------------------SAVE EVALUATION DATA SET--------------------------------------------------------
+    # ### If the validation dataset was already processed and saved comment between here
+   
+    ## TRAINING 0
     examples, labels = load_evaluation_dataset.read_data('../../EvaluationDataset', type="training0")
     datasets = [examples, labels]
+ 
+    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    dataset_list = [arr for arr in datasets]
+    # Save the list using pickle
+    with open("formatted_datasets/saved_evaluation_dataset_training.pkl", "wb") as file:
+        pickle.dump(dataset_list, file)
 
-    np.save("formatted_datasets/saved_evaluation_dataset_training.npy", datasets)
-
+    ## TEST 0
     examples, labels = load_evaluation_dataset.read_data('../../EvaluationDataset', type="Test0")
     datasets = [examples, labels]
 
-    np.save("formatted_datasets/saved_evaluation_dataset_test0.npy", datasets)
+    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    dataset_list = [arr for arr in datasets]
+    # Save the list using pickle
+    with open("formatted_datasets/saved_evaluation_dataset_test0.pkl", "wb") as file:
+        pickle.dump(dataset_list, file)
 
+    ## TEST 1
     examples, labels = load_evaluation_dataset.read_data('../../EvaluationDataset', type="Test1")
     datasets = [examples, labels]
 
-    np.save("formatted_datasets/saved_evaluation_dataset_test1.npy", datasets)
+    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    dataset_list = [arr for arr in datasets]
+    # Save the list using pickle
+    with open("formatted_datasets/saved_evaluation_dataset_test1.pkl", "wb") as file:
+        pickle.dump(dataset_list, file)
     
-    # And here if the pre-training dataset was already processed and saved
+    ### and here - if the validation dataset was already processed and saved
 
-    # Comment between here
+    #     #-----------------LOAD PRE-TRAINING DATA SET-------------------------------------------------------
+    # ### If the pre-training dataset was already processed and saved uncomment between here
+    # with open("formatted_datasets/saved_evaluation_dataset_training.pkl", "rb") as file:
+    #     datasets_training = pickle.load(file)
+    # examples_training, labels_training = datasets_training
 
-    datasets_training = np.load("formatted_datasets/saved_evaluation_dataset_training.npy", encoding="bytes")
-    examples_training, labels_training = datasets_training
+    # with open("formatted_datasets/saved_evaluation_dataset_test0.pkl", "rb") as file:
+    #     datasets_test0 = pickle.load(file)
+    # examples_test0, labels_test0 = datasets_test0
 
-    datasets_test0 = np.load("formatted_datasets/saved_evaluation_dataset_test0.npy", encoding="bytes")
-    examples_test0, labels_test0 = datasets_test0
+    # with open("formatted_datasets/saved_evaluation_dataset_test1.pkl", "rb") as file:
+    #     datasets_test1 = pickle.load(file)
+    # examples_test1, labels_test1 = datasets_test1
 
-    datasets_test1 = np.load("formatted_datasets/saved_evaluation_dataset_test1.npy", encoding="bytes")
-    examples_test1, labels_test1 = datasets_test1
-
-    # And here if the pre-training of the network was already completed.
+    # ### And here 
+    
     accuracy_one_by_one = []
     array_training_error = []
     array_validation_error = []
     # learning_rate=0.002335721469090121 (for network enhanced)
 
+    if not os.path.exists("results"):
+        os.makedirs("results", exist_ok=True)
     with open("results/evaluation_dataset_TARGET_convnet_enhanced.txt", "a") as myfile:
         myfile.write("Test")
     for training_cycle in range(1, 5):
