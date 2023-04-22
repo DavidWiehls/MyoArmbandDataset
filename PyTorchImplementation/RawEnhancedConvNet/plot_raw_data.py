@@ -4,7 +4,7 @@ import numpy as np
 import os 
 def plot_raw_data(data):
     # Create time array (assuming 5ms steps)
-    time_steps = 5 * np.arange(data.shape[1])
+    time_steps = 0.005 * np.arange(data.shape[1])
 
     # Create a grid of subplots with 4 rows and 2 columns
     fig, axes = plt.subplots(4, 2, figsize=(30, 15))
