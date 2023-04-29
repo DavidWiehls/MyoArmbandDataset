@@ -308,6 +308,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer=optimizer, mode='min', factor=.2, patience=5,
                                                              verbose=True, eps=precision)
             
+            ##WHY DO WE NEED TO TRAIN THE MODEL TWICE?
             cnn = train_model(cnn, criterion, optimizer, scheduler, dataloaders={"train": trainloader,
                                                                                  "val": validationloader},
                               precision=precision)
@@ -465,7 +466,7 @@ if __name__ == '__main__':
     ### and here
     
     #-----------------LOAD PRE-TRAINING DATA SET-------------------------------------------------------
-    ### If the pre-training dataset was already processed and saved uncomment between here
+    ## If the pre-training dataset was already processed and saved uncomment between here
     with open("formatted_datasets/saved_pre_training_dataset.pkl", "rb") as file:
         datasets_pre_training = pickle.load(file)
         
@@ -474,56 +475,56 @@ if __name__ == '__main__':
     
     ### and here
     
-    # #------------------SAVE EVALUATION DATA SET--------------------------------------------------------
-    # ### If the validation dataset was already processed and saved comment between here
+    # # #------------------SAVE EVALUATION DATA SET--------------------------------------------------------
+    # # ### If the validation dataset was already processed and saved comment between here
    
-    ## TRAINING 0
-    examples, labels = load_evaluation_dataset.read_data('../../EvaluationDataset', type="training0")
-    datasets = [examples, labels]
+    # ## TRAINING 0
+    # examples_training, labels_training = load_evaluation_dataset.read_data('../../EvaluationDataset', type="training0")
+    # datasets = [examples_training, labels_training]
  
-    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
-    dataset_list = [arr for arr in datasets]
-    # Save the list using pickle
-    with open("formatted_datasets/saved_evaluation_dataset_training.pkl", "wb") as file:
-        pickle.dump(dataset_list, file)
+    # # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    # dataset_list = [arr for arr in datasets]
+    # # Save the list using pickle
+    # with open("formatted_datasets/saved_evaluation_dataset_training.pkl", "wb") as file:
+    #     pickle.dump(dataset_list, file)
 
-    ## TEST 0
-    examples, labels = load_evaluation_dataset.read_data('../../EvaluationDataset', type="Test0")
-    datasets = [examples, labels]
+    # ## TEST 0
+    # examples_test0, labels_test0 = load_evaluation_dataset.read_data('../../EvaluationDataset', type="Test0")
+    # datasets = [examples_test0, labels_test0]
 
-    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
-    dataset_list = [arr for arr in datasets]
-    # Save the list using pickle
-    with open("formatted_datasets/saved_evaluation_dataset_test0.pkl", "wb") as file:
-        pickle.dump(dataset_list, file)
+    # # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    # dataset_list = [arr for arr in datasets]
+    # # Save the list using pickle
+    # with open("formatted_datasets/saved_evaluation_dataset_test0.pkl", "wb") as file:
+    #     pickle.dump(dataset_list, file)
 
-    ## TEST 1
-    examples, labels = load_evaluation_dataset.read_data('../../EvaluationDataset', type="Test1")
-    datasets = [examples, labels]
+    # ## TEST 1
+    # examples_test1, labels_test1 = load_evaluation_dataset.read_data('../../EvaluationDataset', type="Test1")
+    # datasets = [examples_test1, labels_test1]
 
-    # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
-    dataset_list = [arr for arr in datasets]
-    # Save the list using pickle
-    with open("formatted_datasets/saved_evaluation_dataset_test1.pkl", "wb") as file:
-        pickle.dump(dataset_list, file)
+    # # # Convert the inhomogeneous NumPy array to a list of NumPy arrays with consistent shapes
+    # dataset_list = [arr for arr in datasets]
+    # # Save the list using pickle
+    # with open("formatted_datasets/saved_evaluation_dataset_test1.pkl", "wb") as file:
+    #     pickle.dump(dataset_list, file)
     
     ### and here - if the validation dataset was already processed and saved
 
     #     #-----------------LOAD PRE-TRAINING DATA SET-------------------------------------------------------
-    # ### If the pre-training dataset was already processed and saved uncomment between here
-    # with open("formatted_datasets/saved_evaluation_dataset_training.pkl", "rb") as file:
-    #     datasets_training = pickle.load(file)
-    # examples_training, labels_training = datasets_training
+    ### If the pre-training dataset was already processed and saved uncomment between here
+    with open("formatted_datasets/saved_evaluation_dataset_training.pkl", "rb") as file:
+        datasets_training = pickle.load(file)
+    examples_training, labels_training = datasets_training
 
-    # with open("formatted_datasets/saved_evaluation_dataset_test0.pkl", "rb") as file:
-    #     datasets_test0 = pickle.load(file)
-    # examples_test0, labels_test0 = datasets_test0
+    with open("formatted_datasets/saved_evaluation_dataset_test0.pkl", "rb") as file:
+        datasets_test0 = pickle.load(file)
+    examples_test0, labels_test0 = datasets_test0
 
-    # with open("formatted_datasets/saved_evaluation_dataset_test1.pkl", "rb") as file:
-    #     datasets_test1 = pickle.load(file)
-    # examples_test1, labels_test1 = datasets_test1
+    with open("formatted_datasets/saved_evaluation_dataset_test1.pkl", "rb") as file:
+        datasets_test1 = pickle.load(file)
+    examples_test1, labels_test1 = datasets_test1
 
-    # ### And here 
+    ### And here 
     
     accuracy_one_by_one = []
     array_training_error = []
