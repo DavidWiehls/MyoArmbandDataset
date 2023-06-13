@@ -77,7 +77,7 @@ def calculate_pre_training(examples, labels):
         print("Shape training : ", np.shape(examples_personne_scrambled))
         print("Shape valid : ", np.shape(examples_personne_scrambled_valid))
 
-    cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cpu()
+    cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cuda()
 
     criterion = nn.CrossEntropyLoss(size_average=False)
     optimizer = optim.Adam(cnn.parameters(), lr=0.002335721469090121)
@@ -140,7 +140,7 @@ def pre_train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epoch
                     # get the inputs
                     inputs, labels = data
 
-                    inputs, labels = Variable(inputs.cpu()), Variable(labels.cpu())
+                    inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
 
                     # zero the parameter gradients
                     optimizer.zero_grad()
@@ -233,7 +233,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             Y_test_1.extend(labels_test_1[j][k])
             
         if training_cycle == 0:
-            cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cpu()
+            cnn = target_network_raw_emg_enhanced.SourceNetwork(number_of_class=7, dropout_rate=.35).cuda()
             cnn.eval()
             X_test_0, Y_test_0 = scramble(X_test_0, Y_test_0)
 
@@ -251,12 +251,12 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_0 in enumerate(test_0_loader, 0):
                 # get the inputs
                 inputs_test_0, ground_truth_test_0 = data_test_0
-                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cpu()), Variable(
-                    ground_truth_test_0.cpu())
+                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cuda()), Variable(
+                    ground_truth_test_0.cuda())
     
                 outputs_test_0 = cnn(inputs_test_0)
                 _, predicted = torch.max(outputs_test_0.data, 1)
-                correct_prediction_test_0 += (predicted.cpu().numpy() == ground_truth_test_0.data.cpu().numpy()).sum()
+                correct_prediction_test_0 += (predicted.cuda().numpy() == ground_truth_test_0.data.cuda().numpy()).sum()
                 total += ground_truth_test_0.size(0)
             print("ACCURACY TEST_0 FINAL : %.3f %%" % (100 * float(correct_prediction_test_0) / float(total)))
             accuracy_test0.append(100 * float(correct_prediction_test_0) / float(total))
@@ -267,12 +267,12 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_1 in enumerate(test_1_loader, 0):
                 # get the inputs
                 inputs_test_1, ground_truth_test_1 = data_test_1
-                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cpu()), Variable(
-                    ground_truth_test_1.cpu())
+                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cuda()), Variable(
+                    ground_truth_test_1.cuda())
     
                 outputs_test_1 = cnn(inputs_test_1)
                 _, predicted = torch.max(outputs_test_1.data, 1)
-                correct_prediction_test_1 += (predicted.cpu().numpy() == ground_truth_test_1.data.cpu().numpy()).sum()
+                correct_prediction_test_1 += (predicted.cuda().numpy() == ground_truth_test_1.data.cuda().numpy()).sum()
                 total += ground_truth_test_1.size(0)
             print("ACCURACY TEST_1 FINAL : %.3f %%" % (100 * float(correct_prediction_test_1) / float(total)))
             accuracy_test1.append(100 * float(correct_prediction_test_1) / float(total))
@@ -299,7 +299,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             pre_trained_weights = torch.load('convnet_weights/best_pre_train_weights_target_raw.pt')
             cnn = target_network_raw_emg_enhanced.TargetNetwork(number_of_class=7,
                                                                 weights_pre_trained_convnet=pre_trained_weights,
-                                                                dropout=.5).cpu()
+                                                                dropout=.5).cuda()
             
             criterion = nn.CrossEntropyLoss(size_average=False)
             optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
@@ -330,11 +330,11 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_0 in enumerate(test_0_loader, 0):
                 # get the inputs
                 inputs_test_0, ground_truth_test_0 = data_test_0
-                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cpu()), Variable(ground_truth_test_0.cpu())
+                inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cuda()), Variable(ground_truth_test_0.cuda())
                 
                 outputs_test_0 = cnn(inputs_test_0)
                 _, predicted = torch.max(outputs_test_0.data, 1)
-                correct_prediction_test_0 += (predicted.cpu().numpy() == ground_truth_test_0.data.cpu().numpy()).sum()
+                correct_prediction_test_0 += (predicted.cuda().numpy() == ground_truth_test_0.data.cuda().numpy()).sum()
                 total += ground_truth_test_0.size(0)
             print("ACCURACY TEST_0 FINAL : %.3f %%" % (100 * float(correct_prediction_test_0) / float(total)))
             accuracy_test0.append(100 * float(correct_prediction_test_0) / float(total))
@@ -345,11 +345,11 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
             for k, data_test_1 in enumerate(test_1_loader, 0):
                 # get the inputs
                 inputs_test_1, ground_truth_test_1 = data_test_1
-                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cpu()), Variable(ground_truth_test_1.cpu())
+                inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cuda()), Variable(ground_truth_test_1.cuda())
                 
                 outputs_test_1 = cnn(inputs_test_1)
                 _, predicted = torch.max(outputs_test_1.data, 1)
-                correct_prediction_test_1 += (predicted.cpu().numpy() == ground_truth_test_1.data.cpu().numpy()).sum()
+                correct_prediction_test_1 += (predicted.cuda().numpy() == ground_truth_test_1.data.cuda().numpy()).sum()
                 total += ground_truth_test_1.size(0)
             print("ACCURACY TEST_1 FINAL : %.3f %%" % (100 * float(correct_prediction_test_1) / float(total)))
             accuracy_test1.append(100 * float(correct_prediction_test_1) / float(total))
@@ -388,7 +388,7 @@ def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=50
             for i, data in enumerate(dataloaders[phase], 0):
                 # get the inputs
                 inputs, labels = data
-                inputs, labels = Variable(inputs.cpu()), Variable(labels.cpu())
+                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
                 
                 # zero the parameter gradients
                 optimizer.zero_grad()

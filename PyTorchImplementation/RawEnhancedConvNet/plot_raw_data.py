@@ -49,8 +49,10 @@ def read_data(candidate,classe_number):
     
     return example
 
+## Define which candidate's data you want to plot
 candidate = 0
 classe_number = 0
 for classe_number in range(24):
     data = read_data(candidate=candidate,classe_number=classe_number)
     plot_raw_data(data)
+print('DONE!')

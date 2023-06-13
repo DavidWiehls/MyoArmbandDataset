@@ -85,7 +85,7 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
         trainloader = torch.utils.data.DataLoader(train, batch_size=256, shuffle=True, drop_last=True)
         validationloader = torch.utils.data.DataLoader(validation, batch_size=128, shuffle=True, drop_last=True)
         
-        cnn = source_network_raw_emg_enhanced.Net(number_of_class=7).cpu()
+        cnn = source_network_raw_emg_enhanced.Net(number_of_class=7).cuda()
         
         criterion = nn.CrossEntropyLoss(size_average=False)
         optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
@@ -115,11 +115,11 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
         for k, data_test_0 in enumerate(test_0_loader, 0):
             # get the inputs
             inputs_test_0, ground_truth_test_0 = data_test_0
-            inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cpu()), Variable(ground_truth_test_0.cpu())
+            inputs_test_0, ground_truth_test_0 = Variable(inputs_test_0.cuda()), Variable(ground_truth_test_0.cuda())
             
             outputs_test_0 = cnn(inputs_test_0)
             _, predicted = torch.max(outputs_test_0.data, 1)
-            correct_prediction_test_0 += (predicted.cpu().numpy() == ground_truth_test_0.data.cpu().numpy()).sum()
+            correct_prediction_test_0 += (predicted.cuda().numpy() == ground_truth_test_0.data.cuda().numpy()).sum()
             total += ground_truth_test_0.size(0)
         print("ACCURACY TEST_0 FINAL : %.3f %%" % (100 * float(correct_prediction_test_0) / float(total)))
         accuracy_test0.append(100 * float(correct_prediction_test_0) / float(total))
@@ -130,11 +130,11 @@ def calculate_fitness(examples_training, labels_training, examples_test0, labels
         for k, data_test_1 in enumerate(test_1_loader, 0):
             # get the inputs
             inputs_test_1, ground_truth_test_1 = data_test_1
-            inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cpu()), Variable(ground_truth_test_1.cpu())
+            inputs_test_1, ground_truth_test_1 = Variable(inputs_test_1.cuda()), Variable(ground_truth_test_1.cuda())
     
             outputs_test_1 = cnn(inputs_test_1)
             _, predicted = torch.max(outputs_test_1.data, 1)
-            correct_prediction_test_1 += (predicted.cpu().numpy() == ground_truth_test_1.data.cpu().numpy()).sum()
+            correct_prediction_test_1 += (predicted.cuda().numpy() == ground_truth_test_1.data.cuda().numpy()).sum()
             total += ground_truth_test_1.size(0)
         print("ACCURACY TEST_1 FINAL : %.3f %%" % (100 * float(correct_prediction_test_1) / float(total)))
         accuracy_test1.append(100 * float(correct_prediction_test_1) / float(total))
@@ -173,7 +173,7 @@ def train_model(cnn, criterion, optimizer, scheduler, dataloaders, num_epochs=50
             for i, data in enumerate(dataloaders[phase], 0):
                 # get the inputs
                 inputs, labels = data
-                inputs, labels = Variable(inputs.cpu()), Variable(labels.cpu())
+                inputs, labels = Variable(inputs.cuda()), Variable(labels.cuda())
                 
                 # zero the parameter gradients
                 optimizer.zero_grad()
